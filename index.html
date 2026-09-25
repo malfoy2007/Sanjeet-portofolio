@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Unlock the Course</title>
+  <style>
+    body {
+      background: #0b0f19;
+      color: #eef2f8;
+      font-family: system-ui, Arial, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      margin: 0;
+      padding: 20px;
+      box-sizing: border-box;
+    }
+    .box {
+      background: #151d2e;
+      border: 1px solid #23304a;
+      border-radius: 16px;
+      padding: 36px 28px;
+      max-width: 420px;
+      width: 100%;
+      text-align: center;
+    }
+    h1 { font-size: 1.4rem; margin: 0 0 10px; }
+    p  { color: #9aa7bd; margin: 0 0 24px; font-size: 0.95rem; line-height: 1.5; }
+    input {
+      width: 100%;
+      padding: 14px;
+      border-radius: 10px;
+      border: 1px solid #23304a;
+      background: #0d1421;
+      color: #eef2f8;
+      font-size: 1rem;
+      margin-bottom: 12px;
+      box-sizing: border-box;
+    }
+    input:focus { outline: none; border-color: #2aabee; }
+    button {
+      width: 100%;
+      padding: 14px;
+      border: none;
+      border-radius: 10px;
+      background: #2aabee;
+      color: white;
+      font-weight: bold;
+      font-size: 1rem;
+      cursor: pointer;
+    }
+    button:hover { background: #1d8fd0; }
+    button:disabled { opacity: 0.5; cursor: not-allowed; }
+    #msg { margin-top: 14px; font-size: 0.9rem; min-height: 20px; }
+    .err { color: #ff6b6b; }
+    .ok  { color: #5ec55e; }
+  </style>
+</head>
+<body>
+  <div class="box">
+    <h1>Enter access code</h1>
+    <p>Type the code you were given to unlock the free course.</p>
+    <input id="code" type="text" placeholder="Access code" autocomplete="off">
+    <button id="go">Unlock</button>
+    <div id="msg"></div>
+  </div>
+
+  <script>
+    const codeBox = document.getElementById('code');
+    const button  = document.getElementById('go');
+    const msg     = document.getElementById('msg');
+
+    async function tryUnlock() {
+      const code = codeBox.value.trim();
+      if (!code) return;
+
+      button.disabled = true;
+      msg.textContent = 'Checking...';
+      msg.className = '';
+
+      try {
+        const response = await fetch('/api/unlock', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ code: code })
+        });
+        const data = await response.json();
+
+        if (data.ok) {
+          msg.textContent = 'Correct! Opening Telegram...';
+          msg.className = 'ok';
+          window.location.href = data.url;
+        } else {
+          msg.textContent = data.error || 'Wrong code.';
+          msg.className = 'err';
+          button.disabled = false;
+        }
+      } catch (err) {
+        msg.textContent = 'Network error. Try again.';
+        msg.className = 'err';
+        button.disabled = false;
+      }
+    }
+
+    button.addEventListener('click', tryUnlock);
+    codeBox.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter') tryUnlock();
+    });
+  </script>
+</body>
+  </html>

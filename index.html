@@ -3,111 +3,73 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Unlock the Course</title>
+  <title>Get the Course — ₹20</title>
   <style>
     body {
-      background: #0b0f19;
-      color: #eef2f8;
+      background: #0b0f19; color: #eef2f8;
       font-family: system-ui, Arial, sans-serif;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      min-height: 100vh;
-      margin: 0;
-      padding: 20px;
-      box-sizing: border-box;
+      display: flex; justify-content: center; align-items: center;
+      min-height: 100vh; margin: 0; padding: 20px; box-sizing: border-box;
     }
     .box {
-      background: #151d2e;
-      border: 1px solid #23304a;
-      border-radius: 16px;
-      padding: 36px 28px;
-      max-width: 420px;
-      width: 100%;
-      text-align: center;
+      background: #151d2e; border: 1px solid #23304a;
+      border-radius: 16px; padding: 32px 24px;
+      max-width: 440px; width: 100%; text-align: center;
     }
-    h1 { font-size: 1.4rem; margin: 0 0 10px; }
-    p  { color: #9aa7bd; margin: 0 0 24px; font-size: 0.95rem; line-height: 1.5; }
-    input {
-      width: 100%;
-      padding: 14px;
-      border-radius: 10px;
-      border: 1px solid #23304a;
-      background: #0d1421;
-      color: #eef2f8;
-      font-size: 1rem;
-      margin-bottom: 12px;
+    h1 { font-size: 1.35rem; margin: 0 0 8px; }
+    .price { font-size: 2rem; font-weight: 800; color: #2aabee; margin: 12px 0; }
+    p  { color: #9aa7bd; margin: 0 0 20px; font-size: 0.92rem; line-height: 1.5; }
+    a.pay-btn {
+      display: block; width: 100%; padding: 15px;
+      border-radius: 10px; background: #2aabee; color: white;
+      font-weight: bold; font-size: 1rem;
+      text-decoration: none; margin-bottom: 12px;
       box-sizing: border-box;
     }
-    input:focus { outline: none; border-color: #2aabee; }
-    button {
-      width: 100%;
-      padding: 14px;
-      border: none;
-      border-radius: 10px;
-      background: #2aabee;
-      color: white;
-      font-weight: bold;
-      font-size: 1rem;
-      cursor: pointer;
+    a.pay-btn:hover { background: #1d8fd0; }
+    .upi-box {
+      background: #0d1421; border: 1px solid #23304a;
+      border-radius: 10px; padding: 12px;
+      font-family: monospace; font-size: 0.95rem;
+      word-break: break-all; margin-bottom: 12px; color: #eef2f8;
     }
-    button:hover { background: #1d8fd0; }
-    button:disabled { opacity: 0.5; cursor: not-allowed; }
-    #msg { margin-top: 14px; font-size: 0.9rem; min-height: 20px; }
-    .err { color: #ff6b6b; }
-    .ok  { color: #5ec55e; }
+    .qr { background: white; padding: 12px; border-radius: 10px; display: inline-block; margin-bottom: 16px; }
+    .step { text-align: left; color: #9aa7bd; font-size: 0.88rem; margin: 4px 0; }
+    .step b { color: #eef2f8; }
+    a.send-btn {
+      display: block; width: 100%; padding: 15px; margin-top: 16px;
+      border-radius: 10px; background: #22c55e; color: white;
+      font-weight: bold; font-size: 1rem; text-decoration: none;
+      box-sizing: border-box;
+    }
+    a.send-btn:hover { background: #16a34a; }
   </style>
 </head>
 <body>
   <div class="box">
-    <h1>Enter access code</h1>
-    <p>Type the code you were given to unlock the free course.</p>
-    <input id="code" type="text" placeholder="Access code" autocomplete="off">
-    <button id="go">Unlock</button>
-    <div id="msg"></div>
+    <h1>Get the full course</h1>
+    <div class="price">₹20</div>
+    <p>Pay ₹20 with any UPI app, then send us the screenshot on Telegram. We'll let you in within minutes.</p>
+
+    <a class="pay-btn"
+       href="upi://pay?pa=6207982061@ybl&pn=My%20Course&am=20&cu=INR&tn=Course%20Access">
+      Pay ₹20 with UPI app
+    </a>
+
+    <div class="upi-box">6207982061@ybl</div>
+
+    <div class="qr">
+      <img src="https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=upi%3A%2F%2Fpay%3Fpa%3D6207982061%40ybl%26pn%3DMy%2520Course%26am%3D20%26cu%3DINR"
+           alt="UPI QR" width="180" height="180">
+    </div>
+
+    <div class="step"><b>1.</b> Pay ₹20 with any UPI app</div>
+    <div class="step"><b>2.</b> Screenshot the payment</div>
+    <div class="step"><b>3.</b> Tap the green button and send it</div>
+
+    <a class="send-btn" href="https://t.me/YOUR_USERNAME">
+      Send screenshot on Telegram
+    </a>
   </div>
-
-  <script>
-    const codeBox = document.getElementById('code');
-    const button  = document.getElementById('go');
-    const msg     = document.getElementById('msg');
-
-    async function tryUnlock() {
-      const code = codeBox.value.trim();
-      if (!code) return;
-
-      button.disabled = true;
-      msg.textContent = 'Checking...';
-      msg.className = '';
-
-      try {
-        const response = await fetch('/api/unlock', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ code: code })
-        });
-        const data = await response.json();
-
-        if (data.ok) {
-          msg.textContent = 'Correct! Opening Telegram...';
-          msg.className = 'ok';
-          window.location.href = data.url;
-        } else {
-          msg.textContent = data.error || 'Wrong code.';
-          msg.className = 'err';
-          button.disabled = false;
-        }
-      } catch (err) {
-        msg.textContent = 'Network error. Try again.';
-        msg.className = 'err';
-        button.disabled = false;
-      }
-    }
-
-    button.addEventListener('click', tryUnlock);
-    codeBox.addEventListener('keydown', function(e) {
-      if (e.key === 'Enter') tryUnlock();
-    });
-  </script>
 </body>
-  </html>
+</html>
